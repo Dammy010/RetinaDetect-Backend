@@ -16,7 +16,7 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  origin: process.env.CLIENT_ORIGIN || 'https://retina-detect-frontend.vercel.app',
   credentials: true,
 }));
 
