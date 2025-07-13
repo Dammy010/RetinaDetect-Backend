@@ -3,13 +3,28 @@ const { runPrediction } = require('../services/predictService');
 
 exports.predictDisease = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: 'No image file uploaded' });
+    const base64Image = req.body.image;
+
+    if (!base64Image || !base64Image.startsWith('data:image')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or missing base64 image',
+      });
     }
 
-    const { buffer, originalname, mimetype = 'image/jpeg' } = req.file;
+    const matches = base64Image.match(/^data:(.+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid base64 image format',
+      });
+    }
 
-    const { result, imageBase64 } = await runPrediction(buffer, originalname);
+    const mimetype = matches[1];
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const { result, imageBase64 } = await runPrediction(buffer, `upload.${mimetype.split('/')[1] || 'jpg'}`);
     const imageDataUri = `data:${mimetype};base64,${imageBase64}`;
 
     const prediction = await Prediction.create({
