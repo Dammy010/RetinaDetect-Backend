@@ -9,7 +9,7 @@ const app = express();
 
 // ✅ CORS setup for frontend on Vercel
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'https://retina-detect-frontend.vercel.app',
+  origin: process.env.CLIENT_ORIGIN || 'https://retina-detect-frontend.vercel.app/predict',
   credentials: true,
 }));
 
