@@ -1,7 +1,6 @@
 const Prediction = require('../models/Prediction');
 const { runPrediction } = require('../services/predictService');
 
-// POST /api/predict
 exports.predictDisease = async (req, res) => {
   try {
     if (!req.file) {
@@ -36,11 +35,9 @@ exports.predictDisease = async (req, res) => {
   }
 };
 
-// GET /api/predict/history
 exports.getUserPredictions = async (req, res) => {
   try {
-    const predictions = await Prediction.find({ user: req.user._id })
-      .sort({ createdAt: -1 });
+    const predictions = await Prediction.find({ user: req.user._id }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -53,6 +50,35 @@ exports.getUserPredictions = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch prediction history',
+      error: error.message || 'Server error',
+    });
+  }
+};
+
+exports.deletePredictionById = async (req, res) => {
+  try {
+    const prediction = await Prediction.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!prediction) {
+      return res.status(404).json({
+        success: false,
+        message: 'Prediction not found or already deleted',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Prediction deleted successfully',
+      deletedId: prediction._id,
+    });
+  } catch (error) {
+    console.error('❌ Delete Prediction Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete prediction',
       error: error.message || 'Server error',
     });
   }
