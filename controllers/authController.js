@@ -2,17 +2,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Generate JWT
 const createToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
 
-// Set cookie options
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', // only true in production
-  sameSite: 'None', // needed for cross-origin (Vercel -> Vercel)
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  secure: process.env.NODE_ENV === 'production', 
+  sameSite: 'None', 
+  maxAge: 7 * 24 * 60 * 60 * 1000, 
 };
 
 const signup = async (req, res) => {

@@ -3,7 +3,6 @@ const User = require('../models/User');
 
 const protect = async (req, res, next) => {
   try {
-    // Debug incoming cookies
     console.log('🔐 Incoming Cookies:', req.cookies);
 
     const token = req.cookies.token;
@@ -13,7 +12,6 @@ const protect = async (req, res, next) => {
       return res.status(401).json({ message: 'Unauthorized: No token provided' });
     }
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(decoded.userId).select('-password');

@@ -1,7 +1,6 @@
 const Prediction = require('../models/Prediction');
 const { runPrediction } = require('../services/predictService');
 
-// POST /api/predict (base64 image)
 exports.predictDisease = async (req, res) => {
   try {
     const base64Image = req.body.image;
@@ -13,7 +12,6 @@ exports.predictDisease = async (req, res) => {
       });
     }
 
-    // Extract image data from base64 URI
     const matches = base64Image.match(/^data:(.+);base64,(.+)$/);
     if (!matches || matches.length !== 3) {
       return res.status(400).json({
@@ -26,11 +24,9 @@ exports.predictDisease = async (req, res) => {
     const base64Data = matches[2];
     const buffer = Buffer.from(base64Data, 'base64');
 
-    // Pass buffer to prediction service
     const { result, imageBase64 } = await runPrediction(buffer, `upload.${mimetype.split('/')[1] || 'jpg'}`);
     const imageDataUri = `data:${mimetype};base64,${imageBase64}`;
 
-    // Save to DB
     const prediction = await Prediction.create({
       user: req.user._id,
       result,
@@ -54,7 +50,6 @@ exports.predictDisease = async (req, res) => {
   }
 };
 
-// GET /api/predict/history
 exports.getUserPredictions = async (req, res) => {
   try {
     const predictions = await Prediction.find({ user: req.user._id }).sort({ createdAt: -1 });
@@ -75,7 +70,6 @@ exports.getUserPredictions = async (req, res) => {
   }
 };
 
-// DELETE /api/predict/:id
 exports.deletePredictionById = async (req, res) => {
   try {
     const prediction = await Prediction.findOneAndDelete({
